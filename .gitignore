@@ -1,0 +1,15 @@
+# Build
+build/
+.gradle/
+
+# Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+local.properties
+!gradle/wrapper/gradle-wrapper.jar
+
+# OS
+.DS_Store
+Thumbs.db
