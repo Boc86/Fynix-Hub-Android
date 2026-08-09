@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -53,12 +54,10 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.compose.foundation)
     implementation(libs.compose.navigation)
-    implementation(libs.compose.runtime.livedata)
     debugImplementation(libs.compose.ui.tooling)
 
     // Lifecycle
     implementation(libs.lifecycle.viewmodel.compose)
-    implementation(libs.lifecycle.runtime.compose)
 
     // Network
     implementation(libs.retrofit)
@@ -69,11 +68,7 @@ dependencies {
 
     // Media
     implementation(libs.exoplayer)
-    implementation(libs.exoplayer.hls)
     implementation(libs.coil.compose)
-
-    // Storage
-    implementation(libs.datastore.preferences)
 
     // Coroutines
     implementation(libs.coroutines.android)
