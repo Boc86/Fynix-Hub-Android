@@ -6,8 +6,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datarovider.preferences.dataStore
-import androidx.datarovider.preferences.edit
+import androidx.datastore.preferences.dataStore
+import androidx.datastore.preferences.edit
 import com.fynix.android.network.models.ServerSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

@@ -2,7 +2,6 @@ package com.fynix.android.data
 
 import com.fynix.android.network.NetworkApi
 import com.fynix.android.network.createApi
-import com.fynix.android.network.models.ChannelState
 import com.fynix.android.network.models.ConnectionState
 import com.fynix.android.network.models.MergedChannel
 import kotlinx.coroutines.flow.Flow

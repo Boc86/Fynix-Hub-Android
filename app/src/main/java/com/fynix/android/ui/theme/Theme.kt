@@ -1,73 +1,55 @@
 package com.fynix.android.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.DarkColorScheme
+import androidx.compose.material3.LightColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
+import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
-    primary = android.graphics.Color.parseColor("#1976D2"),
-    secondary = android.graphics.Color.parseColor("#03DAC6"),
-    tertiary = android.graphics.Color.parseColor("#C0CA33"),
-    background = android.graphics.Color.parseColor("#121212"),
-    surface = android.graphics.Color.parseColor("#1E1E1E"),
-    onPrimary = android.graphics.Color.parseColor("#FFFFFF"),
-    onSecondary = android.graphics.Color.parseColor("#000000"),
-    onTertiary = android.graphics.Color.parseColor("#000000"),
-    onBackground = android.graphics.Color.parseColor("#FFFFFF"),
-    onSurface = android.graphics.Color.parseColor("#FFFFFF")
+private val LightColors = LightColorScheme(
+    primary = Color(0xFF6750A4),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFEADDFF),
+    onPrimaryContainer = Color(0xFF21005D),
+    secondary = Color(0xFF625B71),
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFFE8DEF8),
+    onSecondaryContainer = Color(0xFF1D192B),
+    background = Color(0xFFFFFBFE),
+    onBackground = Color(0xFF1D1B20),
+    surface = Color(0xFFFFFBFE),
+    onSurface = Color(0xFF1D1B20),
+    error = Color(0xFFBA1A1A),
+    onError = Color(0xFFFFFFFF),
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = android.graphics.Color.parseColor("#1976D2"),
-    secondary = android.graphics.Color.parseColor("#03DAC6"),
-    tertiary = android.graphics.Color.parseColor("#C0CA33"),
-    background = android.graphics.Color.parseColor("#FFFFFF"),
-    surface = android.graphics.Color.parseColor("#FFFFFF"),
-    onPrimary = android.graphics.Color.parseColor("#FFFFFF"),
-    onSecondary = android.graphics.Color.parseColor("#000000"),
-    onTertiary = android.graphics.Color.parseColor("#000000"),
-    onBackground = android.graphics.Color.parseColor("#000000"),
-    onSurface = android.graphics.Color.parseColor("#000000")
+private val DarkColors = DarkColorScheme(
+    primary = Color(0xFFD0BCFF),
+    onPrimary = Color(0xFF381E72),
+    primaryContainer = Color(0xFF4F378B),
+    onPrimaryContainer = Color(0xFFEADDFF),
+    secondary = Color(0xFFCCC2DC),
+    onSecondary = Color(0xFF332D41),
+    secondaryContainer = Color(0xFF4A4458),
+    onSecondaryContainer = Color(0xFFE8DEF8),
+    background = Color(0xFF1D1B20),
+    onBackground = Color(0xFFE6E1E5),
+    surface = Color(0xFF1D1B20),
+    onSurface = Color(0xFFE6E1E5),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
 )
 
 @Composable
 fun FynixHubTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = view.context as Activity
-            window.statusBarColor = colorScheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
-        }
-    }
+    val colors = if (darkTheme) DarkColors else LightColors
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
+        colorScheme = colors,
         content = content
     )
 }
