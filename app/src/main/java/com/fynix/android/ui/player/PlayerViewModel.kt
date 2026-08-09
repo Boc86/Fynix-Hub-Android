@@ -15,13 +15,13 @@ import kotlinx.coroutines.launch
 class PlayerViewModel(
     private val networkRepo: NetworkRepository
 ) : ViewModel() {
-    val player = ExoPlayer.Builder(androidx.appcompat.app.AppCompatActivity().application)
-        .build()
+    private var _player: ExoPlayer? = null
+    val player: ExoPlayer get() = _player ?: ExoPlayer.Builder(androidx.appcompat.app.AppCompatActivity().application).build().also { _player = it }
 
     private val _playerState = MutableStateFlow(PlayerState.Idle)
     val playerState: StateFlow<PlayerState> = _playerState
 
-    fun loadChannel(channelId: String) {
+    fun loadChannel(channelId: String, networkRepo: NetworkRepository) {
         viewModelScope.launch {
             _playerState.value = PlayerState.Loading
             try {
@@ -29,9 +29,9 @@ class PlayerViewModel(
                 networkRepo.getStreamUrl(settings.host, settings.port, channelId)
                     .collect { result ->
                         result.onSuccess { url ->
-                            player.setMediaItem(MediaItem.fromUri(Uri.parse(url)))
-                            player.prepare()
-                            player.play()
+                            _player?.setMediaItem(MediaItem.fromUri(Uri.parse(url)))
+                            _player?.prepare()
+                            _player?.play()
                             _playerState.value = PlayerState.Playing
                         }.onFailure { e ->
                             _playerState.value = PlayerState.Error
@@ -44,11 +44,12 @@ class PlayerViewModel(
     }
 
     fun release() {
-        player.release()
+        _player?.release()
+        _player = null
     }
 
     override fun onCleared() {
         super.onCleared()
-        player.release()
+        release()
     }
 }

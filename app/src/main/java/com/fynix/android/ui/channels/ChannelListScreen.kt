@@ -16,13 +16,12 @@ fun ChannelListScreen(
     networkRepo: NetworkRepository,
     onChannelSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChannelListViewModel = viewModel()
+    viewModel: ChannelListViewModel = viewModel(factory = ChannelListViewModelFactory(networkRepo))
 ) {
     val channels by viewModel.channels
     val isLoading by viewModel.isLoading
     val error by viewModel.error
 
-    // TODO: Implement actual flow collection from viewModel
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = modifier
@@ -41,7 +40,6 @@ fun ChannelCard(
     channel: MergedChannel,
     onClick: () -> Unit
 ) {
-    // TODO: Implement channel card with image loading
     androidx.compose.material3.Card(
         onClick = onClick
     ) {

@@ -1,6 +1,10 @@
 package com.fynix.android.ui.channels
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.fynix.android.data.NetworkRepository
 import com.fynix.android.data.ServerSettings
@@ -43,5 +47,17 @@ class ChannelListViewModel(
                 _isLoading.value = false
             }
         }
+    }
+}
+
+class ChannelListViewModelFactory(
+    private val networkRepo: NetworkRepository
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ChannelListViewModel::class.java)) {
+            return ChannelListViewModel(networkRepo) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

@@ -9,8 +9,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerView
 import com.fynix.android.data.NetworkRepository
 
@@ -43,7 +43,7 @@ fun PlayerScreen(
     }
 
     DisposableEffect(channelId) {
-        viewModel.loadChannel(channelId)
+        viewModel.loadChannel(channelId, networkRepo)
         onDispose {
             viewModel.release()
         }
