@@ -4,13 +4,14 @@ import com.fynix.android.network.NetworkApi
 import com.fynix.android.network.createApi
 import com.fynix.android.network.models.ConnectionState
 import com.fynix.android.network.models.MergedChannel
+import com.fynix.android.network.models.ServerSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class NetworkRepository(
-    private val settings: Flow<ServerSettings>
+    val settings: Flow<ServerSettings>
 ) {
     private fun api(settings: ServerSettings): NetworkApi =
         createApi(settings.host, settings.port, settings.username, settings.password)
@@ -54,9 +55,6 @@ class NetworkRepository(
         port: Int,
         channelId: String
     ): Flow<Result<String>> = flow {
-        val api = createApi(host, port)
-        val playlist = api.getStreamPlaylist(channelId)
-        // Return the full URL for ExoPlayer
         emit(Result.success("http://${host}:${port}/api/stream/${channelId}/p/"))
     }.catch { emit(Result.failure(it)) }
 
