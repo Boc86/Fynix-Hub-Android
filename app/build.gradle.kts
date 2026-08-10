@@ -70,4 +70,7 @@ dependencies {
     // Core (themes.xml uses MaterialComponents)
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("com.google.android.material:material:1.10.0")
+
+    // Images (channel logos)
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }

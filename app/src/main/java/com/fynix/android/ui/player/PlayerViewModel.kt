@@ -10,10 +10,13 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.fynix.android.data.NetworkRepository
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import okhttp3.Credentials
 
 class PlayerViewModel(
     application: Application,
@@ -32,7 +35,22 @@ class PlayerViewModel(
             try {
                 val settings = networkRepo.settings.first()
                 val url = "http://${settings.host}:${settings.port}/api/stream/${channelId}/p/"
-                val player = ExoPlayer.Builder(getApplication()).build()
+                val dataSourceFactory = DefaultHttpDataSource.Factory()
+                    .setDefaultRequestProperties(
+                        if (settings.username.isNotEmpty()) {
+                            mapOf(
+                                "Authorization" to Credentials.basic(
+                                    settings.username,
+                                    settings.password
+                                )
+                            )
+                        } else {
+                            emptyMap()
+                        }
+                    )
+                val player = ExoPlayer.Builder(getApplication())
+                    .setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory))
+                    .build()
                 player.setMediaItem(MediaItem.fromUri(Uri.parse(url)))
                 player.prepare()
                 player.play()

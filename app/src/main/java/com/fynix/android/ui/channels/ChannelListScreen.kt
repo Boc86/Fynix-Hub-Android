@@ -1,5 +1,6 @@
 package com.fynix.android.ui.channels
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -14,16 +15,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fynix.android.data.NetworkRepository
+import com.fynix.android.data.SettingsRepository
 import com.fynix.android.network.models.MergedChannel
 import com.fynix.android.ui.components.FocusableCard
+import com.fynix.android.ui.settings.ServerSetupDialog
 
 @Composable
 fun ChannelListScreen(
     networkRepo: NetworkRepository,
+    settingsRepository: SettingsRepository,
     onChannelSelected: (String) -> Unit,
     onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
@@ -32,9 +35,10 @@ fun ChannelListScreen(
     val channels by viewModel.channels.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val settings by settingsRepository.settings.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.loadChannels()
+    LaunchedEffect(settings.host) {
+        if (settings.host.isNotBlank()) viewModel.loadChannels()
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -45,13 +49,10 @@ fun ChannelListScreen(
             items(channels) { channel ->
                 FocusableCard(
                     focused = false,
-                    onClick = { onChannelSelected(channel.id) }
-                ) {
-                    Text(
-                        text = channel.name,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
+                    onClick = { onChannelSelected(channel.id) },
+                    logoUrl = channel.logo.ifEmpty { channel.logoImage },
+                    name = channel.name
+                )
             }
         }
 
@@ -69,10 +70,17 @@ fun ChannelListScreen(
         Button(
             onClick = onOpenSettings,
             modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(8.dp)
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
         ) {
             Text("Settings")
         }
+    }
+
+    if (settings.host.isBlank()) {
+        ServerSetupDialog(
+            settingsRepository = settingsRepository,
+            onSaved = { /* host set -> LaunchedEffect reloads channels */ }
+        )
     }
 }

@@ -30,6 +30,7 @@ fun FynixApp(
         when (currentScreen) {
             is Screen.Channels -> ChannelListScreen(
                 networkRepo = networkRepo,
+                settingsRepository = settingsRepo,
                 onChannelSelected = { channelId ->
                     currentScreen = Screen.Player(channelId)
                 },

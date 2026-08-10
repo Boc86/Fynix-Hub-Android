@@ -29,8 +29,12 @@ class ChannelListViewModel(
 
             try {
                 val settings = networkRepo.settings.first()
-                networkRepo.getChannels(settings.host, settings.port)
-                    .collect { result ->
+                networkRepo.getChannels(
+                    settings.host,
+                    settings.port,
+                    settings.username,
+                    settings.password
+                ).collect { result ->
                         result.onSuccess { channels ->
                             _channels.value = channels
                         }.onFailure { e ->

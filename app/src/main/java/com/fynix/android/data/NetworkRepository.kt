@@ -31,10 +31,12 @@ class NetworkRepository(
     fun getChannels(
         host: String,
         port: Int,
+        username: String = "",
+        password: String = "",
         limit: Int = 100,
         offset: Int = 0
     ): Flow<Result<List<MergedChannel>>> = flow {
-        val api = createApi(host, port)
+        val api = createApi(host, port, username, password)
         val response = api.getChannels(limit, offset)
         emit(Result.success(response.channels))
     }.catch { emit(Result.failure(it)) }
@@ -42,10 +44,12 @@ class NetworkRepository(
     fun searchChannels(
         host: String,
         port: Int,
+        username: String = "",
+        password: String = "",
         query: String,
         limit: Int = 50
     ): Flow<Result<List<MergedChannel>>> = flow {
-        val api = createApi(host, port)
+        val api = createApi(host, port, username, password)
         val response = api.searchChannels(query, limit)
         emit(Result.success(response.channels))
     }.catch { emit(Result.failure(it)) }
