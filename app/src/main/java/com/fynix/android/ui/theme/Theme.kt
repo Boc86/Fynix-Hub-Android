@@ -1,13 +1,13 @@
 package com.fynix.android.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.DarkColorScheme
-import androidx.compose.material3.LightColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val LightColors = LightColorScheme(
+private val LightColors = lightColorScheme(
     primary = Color(0xFF6750A4),
     onPrimary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xFFEADDFF),
@@ -24,7 +24,7 @@ private val LightColors = LightColorScheme(
     onError = Color(0xFFFFFFFF),
 )
 
-private val DarkColors = DarkColorScheme(
+private val DarkColors = darkColorScheme(
     primary = Color(0xFFD0BCFF),
     onPrimary = Color(0xFF381E72),
     primaryContainer = Color(0xFF4F378B),

@@ -1,41 +1,42 @@
 package com.fynix.android.ui.player
 
+import android.app.Application
 import android.net.Uri
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.fynix.android.data.NetworkRepository
-import com.fynix.android.data.ServerSettings
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
+    application: Application,
     private val networkRepo: NetworkRepository
-) : ViewModel() {
-    // ExoPlayer will be initialized in initWithContext
-    private var _player: ExoPlayer? = null
-    val player: ExoPlayer? get() = _player
+) : AndroidViewModel(application) {
+
+    private val _player = MutableStateFlow<ExoPlayer?>(null)
+    val player: StateFlow<ExoPlayer?> = _player
 
     private val _playerState = MutableStateFlow(PlayerState.Idle)
     val playerState: StateFlow<PlayerState> = _playerState
 
-    fun initWithContext(appContext: android.content.Context) {
-        _player = ExoPlayer.Builder(appContext).build()
-    }
-
     fun loadChannel(channelId: String) {
-        val player = _player ?: return
         viewModelScope.launch {
             _playerState.value = PlayerState.Loading
             try {
                 val settings = networkRepo.settings.first()
                 val url = "http://${settings.host}:${settings.port}/api/stream/${channelId}/p/"
+                val player = ExoPlayer.Builder(getApplication()).build()
                 player.setMediaItem(MediaItem.fromUri(Uri.parse(url)))
                 player.prepare()
                 player.play()
+                _player.value = player
                 _playerState.value = PlayerState.Playing
             } catch (e: Exception) {
                 _playerState.value = PlayerState.Error
@@ -44,13 +45,25 @@ class PlayerViewModel(
     }
 
     fun release() {
-        _player?.release()
-        _player = null
+        _player.value?.release()
+        _player.value = null
+        _playerState.value = PlayerState.Idle
     }
 
     override fun onCleared() {
-        super.onCleared()
         release()
+        super.onCleared()
+    }
+
+    companion object {
+        fun factory(networkRepo: NetworkRepository): ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                PlayerViewModel(
+                    this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application,
+                    networkRepo
+                )
+            }
+        }
     }
 }
 

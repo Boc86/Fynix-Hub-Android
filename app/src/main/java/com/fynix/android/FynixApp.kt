@@ -1,13 +1,16 @@
 package com.fynix.android
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.fynix.android.data.NetworkRepository
+import com.fynix.android.data.SettingsRepository
 import com.fynix.android.ui.channels.ChannelListScreen
+import com.fynix.android.ui.input.InputManager
 import com.fynix.android.ui.input.LocalInputManager
 import com.fynix.android.ui.player.PlayerScreen
 import com.fynix.android.ui.settings.SettingsScreen
@@ -15,19 +18,23 @@ import com.fynix.android.ui.settings.SettingsScreen
 @Composable
 fun FynixApp(
     networkRepo: NetworkRepository,
+    settingsRepo: SettingsRepository,
     modifier: Modifier = Modifier
 ) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Channels) }
 
     // Provide InputManager via CompositionLocal
-    val inputManager = remember { com.fynix.android.FynixApp().inputManager }
+    val inputManager = remember { InputManager() }
 
-    LocalInputManager.Provider(inputManager) {
+    CompositionLocalProvider(LocalInputManager provides inputManager) {
         when (currentScreen) {
             is Screen.Channels -> ChannelListScreen(
                 networkRepo = networkRepo,
                 onChannelSelected = { channelId ->
                     currentScreen = Screen.Player(channelId)
+                },
+                onOpenSettings = {
+                    currentScreen = Screen.Settings
                 }
             )
             is Screen.Player -> PlayerScreen(
@@ -36,7 +43,8 @@ fun FynixApp(
                 networkRepo = networkRepo
             )
             is Screen.Settings -> SettingsScreen(
-                onBack = { currentScreen = Screen.Channels }
+                onBack = { currentScreen = Screen.Channels },
+                settingsRepository = settingsRepo
             )
         }
     }

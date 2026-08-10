@@ -1,8 +1,6 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.compose)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
 }
 
 android {
@@ -22,54 +20,54 @@ android {
             isMinifyEnabled = false
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = "17"
     }
+
     buildFeatures {
-        viewBinding = true
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
+        // 1.5.10 pairs with Kotlin 1.9.22 (per Compose-Kotlin compatibility map)
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
 }
 
 dependencies {
-    // AndroidX core
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
+    // Compose BOM (2023.10.01 -> Compose 1.5.4, matches compiler 1.5.3)
+    implementation(platform("androidx.compose:compose-bom:2023.10.01"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.runtime:runtime")
+    implementation("androidx.activity:activity-compose:1.8.0")
 
-    // Compose BOM
-    implementation(platform(libs.compose.bom))
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.graphics)
-    implementation(libs.compose.ui.tooling.preview)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.navigation)
-    debugImplementation(libs.compose.ui.tooling)
-
-    // Lifecycle
-    implementation(libs.lifecycle.viewmodel.compose)
+    // Lifecycle / ViewModel compose
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
     // Network
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
-    implementation(libs.kotlinx.serialization.json)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
-    // Media
-    implementation(libs.exoplayer)
-    implementation(libs.coil.compose)
+    // ExoPlayer 2.x (matches com.google.android.exoplayer2 imports)
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-hls:2.19.1")
 
     // Coroutines
-    implementation(libs.coroutines.android)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Core (themes.xml uses MaterialComponents)
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("com.google.android.material:material:1.10.0")
 }

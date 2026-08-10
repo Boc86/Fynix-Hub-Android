@@ -1,21 +1,15 @@
 package com.fynix.android.network.models
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
+// Gson-based models (no kotlinx.serialization annotations needed)
 data class MergedChannel(
     val id: String,
     val name: String,
     val logo: String = "",
-    @SerialName("logoImage")
     val logoImage: String = "",
-    @SerialName("countryCode")
     val countryCode: String = "",
     val sources: List<String> = emptyList()
 )
 
-@Serializable
 data class ChannelsResponse(
     val ok: Boolean,
     val total: Int,
@@ -24,7 +18,6 @@ data class ChannelsResponse(
     val channels: List<MergedChannel>
 )
 
-@Serializable
 data class HealthResponse(
     val ok: Boolean,
     val app: String,
@@ -32,7 +25,6 @@ data class HealthResponse(
     val apiVersion: Int
 )
 
-@Serializable
 data class ServerSettings(
     val host: String = "",
     val port: Int = 43862,

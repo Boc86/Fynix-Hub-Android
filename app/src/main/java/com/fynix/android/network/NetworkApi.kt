@@ -29,11 +29,6 @@ interface NetworkApi {
         @Query("q") query: String,
         @Query("limit") limit: Int = 50
     ): ChannelsResponse
-
-    @GET("api/stream/{channelId}/p/")
-    suspend fun getStreamPlaylist(
-        @retrofit2.http.Path("channelId") channelId: String
-    ): String
 }
 
 class AuthInterceptor(

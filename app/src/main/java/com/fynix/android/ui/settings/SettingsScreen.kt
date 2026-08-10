@@ -11,23 +11,34 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.fynix.android.data.ServerSettings
+import com.fynix.android.data.SettingsRepository
+import com.fynix.android.network.models.ServerSettings
 
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
+    settingsRepository: SettingsRepository,
     modifier: Modifier = Modifier
 ) {
     var host by remember { mutableStateOf("") }
     var port by remember { mutableStateOf("43862") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        val s = settingsRepository.settings.value
+        host = s.host
+        port = s.port.toString()
+        username = s.username
+        password = s.password
+    }
 
     Column(
         modifier = modifier
@@ -79,14 +90,15 @@ fun SettingsScreen(
 
         Button(
             onClick = {
-                // Save settings
-                val settings = ServerSettings(
-                    host = host,
-                    port = port.toIntOrNull() ?: 43862,
-                    username = username,
-                    password = password
+                settingsRepository.updateSettings(
+                    ServerSettings(
+                        host = host.trim(),
+                        port = port.toIntOrNull() ?: 43862,
+                        username = username.trim(),
+                        password = password
+                    )
                 )
-                // TODO: Save to repository
+                onBack()
             },
             modifier = Modifier.fillMaxWidth()
         ) {
