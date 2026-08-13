@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.fynix.android.data.SettingsRepository
-import com.fynix.android.network.models.ServerSettings
+import com.fynix.android.data.ServerSettings
 import kotlinx.coroutines.launch
 
 /**

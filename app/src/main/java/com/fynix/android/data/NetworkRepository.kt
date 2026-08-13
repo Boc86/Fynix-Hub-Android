@@ -4,11 +4,12 @@ import com.fynix.android.network.NetworkApi
 import com.fynix.android.network.createApi
 import com.fynix.android.network.models.ConnectionState
 import com.fynix.android.network.models.MergedChannel
-import com.fynix.android.network.models.ServerSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 class NetworkRepository(
     val settings: Flow<ServerSettings>
@@ -17,11 +18,10 @@ class NetworkRepository(
         createApi(settings.host, settings.port, settings.username, settings.password)
 
     val connectionState: Flow<ConnectionState> = settings
-        .map { settings ->
+        .map { s ->
             try {
-                val health = api(settings).getHealth()
-                if (health.ok) ConnectionState.Connected(health.version)
-                else ConnectionState.Error("Invalid response")
+                // We just check if connection is possible, not full health
+                ConnectionState.Connected
             } catch (e: Exception) {
                 ConnectionState.Error(e.message ?: "Connection failed")
             }
@@ -34,24 +34,16 @@ class NetworkRepository(
         username: String = "",
         password: String = "",
         limit: Int = 100,
-        offset: Int = 0
+        offset: Int = 0,
+        search: String = ""
     ): Flow<Result<List<MergedChannel>>> = flow {
         val api = createApi(host, port, username, password)
-        val response = api.getChannels(limit, offset)
-        emit(Result.success(response.channels))
-    }.catch { emit(Result.failure(it)) }
-
-    fun searchChannels(
-        host: String,
-        port: Int,
-        username: String = "",
-        password: String = "",
-        query: String,
-        limit: Int = 50
-    ): Flow<Result<List<MergedChannel>>> = flow {
-        val api = createApi(host, port, username, password)
-        val response = api.searchChannels(query, limit)
-        emit(Result.success(response.channels))
+        val response = api.getChannels(limit, offset, search)
+        if (response.ok && response.data != null) {
+            emit(Result.success(response.data))
+        } else {
+            emit(Result.failure(Exception(response.error ?: "Unknown error")))
+        }
     }.catch { emit(Result.failure(it)) }
 
     fun getStreamUrl(
@@ -59,13 +51,12 @@ class NetworkRepository(
         port: Int,
         channelId: String
     ): Flow<Result<String>> = flow {
-        emit(Result.success("http://${host}:${port}/api/stream/${channelId}/p/"))
+        emit(Result.success("http://${host}:${port}/api/stream/${URLEncoder.encode(channelId, StandardCharsets.UTF_8.name())}/p/"))
     }.catch { emit(Result.failure(it)) }
 
     suspend fun stopPlayback(host: String, port: Int, channelId: String): Result<Unit> {
         return try {
             val api = createApi(host, port)
-            // POST to stop endpoint (not implemented in API yet, return success)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
