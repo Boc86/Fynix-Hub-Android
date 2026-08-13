@@ -11,14 +11,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.fynix.android.data.SettingsRepository
 import com.fynix.android.network.models.ServerSettings
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
@@ -26,17 +29,23 @@ fun SettingsScreen(
     settingsRepository: SettingsRepository,
     modifier: Modifier = Modifier
 ) {
-    var host by remember { mutableStateOf("") }
-    var port by remember { mutableStateOf("43862") }
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    // Collect initial settings once
+    val settings by settingsRepository.settings.collectAsState(initial = ServerSettings())
 
-    LaunchedEffect(Unit) {
-        val s = settingsRepository.settings.value
-        host = s.host
-        port = s.port.toString()
-        username = s.username
-        password = s.password
+    var host by remember { mutableStateOf(settings.host) }
+    var port by remember { mutableStateOf(settings.port.toString()) }
+    var username by remember { mutableStateOf(settings.username) }
+    var password by remember { mutableStateOf(settings.password) }
+    val scope = rememberCoroutineScope()
+
+    // Re-sync fields when settings change externally
+    LaunchedEffect(settings.host) {
+        if (settings.host != host) {
+            host = settings.host
+            port = settings.port.toString()
+            username = settings.username
+            password = settings.password
+        }
     }
 
     Column(
@@ -66,15 +75,16 @@ fun SettingsScreen(
 
         Button(
             onClick = {
-                settingsRepository.updateSettings(
-                    ServerSettings(
-                        host = host.trim(),
-                        port = port.toIntOrNull() ?: 43862,
-                        username = username.trim(),
-                        password = password
-                    )
+                val newSettings = ServerSettings(
+                    host = host.trim(),
+                    port = port.toIntOrNull() ?: 43862,
+                    username = username.trim(),
+                    password = password
                 )
-                onBack()
+                scope.launch {
+                    settingsRepository.saveSettings(newSettings)
+                    onBack()
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {

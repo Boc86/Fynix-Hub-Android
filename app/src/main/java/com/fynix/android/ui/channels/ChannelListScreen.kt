@@ -35,7 +35,7 @@ fun ChannelListScreen(
     val channels by viewModel.channels.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
-    val settings by settingsRepository.settings.collectAsState()
+    val settings by settingsRepository.settings.collectAsState(initial = com.fynix.android.network.models.ServerSettings())
 
     LaunchedEffect(settings.host) {
         if (settings.host.isNotBlank()) viewModel.loadChannels()
@@ -79,6 +79,7 @@ fun ChannelListScreen(
 
     if (settings.host.isBlank()) {
         ServerSetupDialog(
+            initialSettings = settings,
             settingsRepository = settingsRepository,
             onSaved = { /* host set -> LaunchedEffect reloads channels */ }
         )

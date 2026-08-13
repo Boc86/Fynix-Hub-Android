@@ -73,4 +73,7 @@ dependencies {
 
     // Images (channel logos)
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // DataStore for settings persistence
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }
