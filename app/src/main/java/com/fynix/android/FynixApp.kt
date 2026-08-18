@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.fynix.android.data.NetworkRepository
 import com.fynix.android.data.SettingsRepository
 import com.fynix.android.ui.channels.ChannelListScreen
@@ -23,8 +24,10 @@ fun FynixApp(
 ) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Channels) }
 
-    // Provide InputManager via CompositionLocal
-    val inputManager = remember { InputManager() }
+    // Provide InputManager via CompositionLocal. Pass the Context so it can
+    // detect TV/D-pad hardware at startup.
+    val ctx = LocalContext.current
+    val inputManager = remember(ctx) { InputManager(ctx) }
 
     CompositionLocalProvider(LocalInputManager provides inputManager) {
         when (currentScreen) {

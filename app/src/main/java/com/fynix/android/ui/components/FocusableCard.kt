@@ -33,6 +33,7 @@ fun FocusableCard(
     onClick: () -> Unit,
     logoUrl: String = "",
     name: String = "",
+    logoHeight: Int = 120,
     content: (@Composable () -> Unit)? = null
 ) {
     val inputManager = LocalInputManager.current
@@ -80,7 +81,7 @@ fun FocusableCard(
                     contentDescription = name,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .height(48.dp)
+                        .height(logoHeight.dp)
                         .fillMaxWidth()
                 )
             } else {

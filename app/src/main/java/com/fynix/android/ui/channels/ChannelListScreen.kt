@@ -51,7 +51,8 @@ fun ChannelListScreen(
                     focused = false,
                     onClick = { onChannelSelected(channel.id) },
                     logoUrl = channel.logo.ifEmpty { channel.logoImage },
-                    name = channel.name
+                    name = channel.name,
+                    logoHeight = 160
                 )
             }
         }
