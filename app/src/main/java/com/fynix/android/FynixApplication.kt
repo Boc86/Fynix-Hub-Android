@@ -8,7 +8,7 @@ import com.fynix.android.data.SettingsRepository
  * Application class that provides singleton repositories.
  * SettingsRepository now uses DataStore for persistence across restarts.
  */
-class FynixApp : Application() {
+class FynixApplication : Application() {
     val settingsRepository by lazy { SettingsRepository(this) }
     val networkRepository by lazy { NetworkRepository(settingsRepository.settings) }
 }

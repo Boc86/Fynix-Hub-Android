@@ -56,7 +56,7 @@ data class AppSettings(
 @Composable
 fun ProfileScreen(
     settingsRepository: SettingsRepository,
-    onConnected: (AppSettings) -> Unit
+    onConnected: (ServerSettings) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     var serverSettings by remember { mutableStateOf(AppSettings()) }
@@ -90,7 +90,15 @@ fun ProfileScreen(
                             )
                         )
                         loading = false
-                        finalOnConnected(finalSettings)
+                        finalOnConnected(
+                            ServerSettings(
+                                host = finalSettings.host,
+                                port = finalSettings.port,
+                                username = finalSettings.username,
+                                password = finalSettings.password,
+                                activeProfileId = selectedProfile?.id ?: ""
+                            )
+                        )
                     } else {
                         error = profilesResp.error ?: "Failed to get profiles"
                         loading = false
@@ -125,7 +133,15 @@ fun ProfileScreen(
                             activeProfileId = profile.id
                         )
                     )
-                    finalOnConnected(finalSettings)
+                    finalOnConnected(
+                        ServerSettings(
+                            host = finalSettings.host,
+                            port = finalSettings.port,
+                            username = finalSettings.username,
+                            password = finalSettings.password,
+                            activeProfileId = profile.id
+                        )
+                    )
                 } else {
                     error = select.error
                 }
